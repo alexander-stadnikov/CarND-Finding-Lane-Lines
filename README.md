@@ -13,9 +13,6 @@ The goal of the project is to recognize lanes on the road with some limitations:
 
 The project is a part of [Udacity Become a Self-Driving Car Engineer](https://www.udacity.com/course/self-driving-car-engineer-nanodegree--nd013).
 
-All source codes and assets are available on [GitHub](https://github.com/alexander-stadnikov/CarND-Finding-Lane-Lines).
-
-
 ## The project setup
 
 The project consists of a notebook and assets.
