@@ -1,56 +1,132 @@
 # **Finding Lane Lines on the Road** 
-[![Udacity - Self-Driving Car NanoDegree](https://s3.amazonaws.com/udacity-sdc/github/shield-carnd.svg)](http://www.udacity.com/drive)
 
-<img src="examples/laneLines_thirdPass.jpg" width="480" alt="Combined Image" />
-
-Overview
+## Overview
 ---
 
-When we drive, we use our eyes to decide where to go.  The lines on the road that show us where the lanes are act as our constant reference for where to steer the vehicle.  Naturally, one of the first things we would like to do in developing a self-driving car is to automatically detect lane lines using an algorithm.
+Recognizing lanes on the road is one of the essential tasks which human drivers perform well. It’s possible because nature with evolution gifted us perfect sensors. Autonomous systems are only at the beginning of their epoch. It’s a non-trivial task for any robot to read and interpret data about the world around them. [Computer Vision](https://en.wikipedia.org/wiki/Computer_vision) tries to eliminate the gap between us, humans, and robots.
 
-In this project you will detect lane lines in images using Python and OpenCV.  OpenCV means "Open-Source Computer Vision", which is a package that has many useful tools for analyzing images.  
+The goal of the project is to recognize lanes on the road with some limitations:
+-	The recognition isn’t real-time
+-	There’re good weather conditions. It’s a sunny day
+-	The car is moving along a straight line on the highway
+-	Lines are visible
+-	The traffic isn’t dense
 
-To complete the project, two files will be submitted: a file containing project code and a file containing a brief write up explaining your solution. We have included template files to be used both for the [code](https://github.com/udacity/CarND-LaneLines-P1/blob/master/P1.ipynb) and the [writeup](https://github.com/udacity/CarND-LaneLines-P1/blob/master/writeup_template.md).The code file is called P1.ipynb and the writeup template is writeup_template.md 
+The project is a part of [Udacity Become a Self-Driving Car Engineer](https://www.udacity.com/course/self-driving-car-engineer-nanodegree--nd013).
 
-To meet specifications in the project, take a look at the requirements in the [project rubric](https://review.udacity.com/#!/rubrics/322/view)
-
-
-Creating a Great Writeup
----
-For this project, a great writeup should provide a detailed response to the "Reflection" section of the [project rubric](https://review.udacity.com/#!/rubrics/322/view). There are three parts to the reflection:
-
-1. Describe the pipeline
-
-2. Identify any shortcomings
-
-3. Suggest possible improvements
-
-We encourage using images in your writeup to demonstrate how your pipeline works.  
-
-All that said, please be concise!  We're not looking for you to write a book here: just a brief description.
-
-You're not required to use markdown for your writeup.  If you use another method please just submit a pdf of your writeup. Here is a link to a [writeup template file](https://github.com/udacity/CarND-LaneLines-P1/blob/master/writeup_template.md). 
+All source codes and assets are available on [GitHub](https://github.com/alexander-stadnikov/CarND-Finding-Lane-Lines).
 
 
-The Project
+## The project setup
 ---
 
-## If you have already installed the [CarND Term1 Starter Kit](https://github.com/udacity/CarND-Term1-Starter-Kit/blob/master/README.md) you should be good to go!   If not, you should install the starter kit to get started on this project. ##
+The project consists of a notebook and assets.
 
-**Step 1:** Set up the [CarND Term1 Starter Kit](https://github.com/udacity/CarND-Term1-Starter-Kit/blob/master/README.md) if you haven't already.
+There’re two types of assets – images and pictures. Images are test samples (actually, frames from a video stream) stored in JPEG format with dimensions 960x540 pixels. Video files are in two forms:
+1.	Two MPEG-4 with dimensions 960x540 pixels
+2.	One MPEG-4 with dimensions 1280x720 pixels
 
-**Step 2:** Open the code in a Jupyter Notebook
+The idea is to implement a pipeline. It will be done in two stages:
+- Recognize lanes on images
+- Recognize lanes on videos
 
-You will complete the project code in a Jupyter notebook.  If you are unfamiliar with Jupyter Notebooks, check out [Udacity's free course on Anaconda and Jupyter Notebooks](https://classroom.udacity.com/courses/ud1111) to get started.
+A video stream is just a set of frames. The solution for images will be scaled to be used with videos.
 
-Jupyter is an Ipython notebook where you can run blocks of code and see results interactively.  All the code for this project is contained in a Jupyter notebook. To start Jupyter in your browser, use terminal to navigate to your project directory and then run the following command at the terminal prompt (be sure you've activated your Python 3 carnd-term1 environment as described in the [CarND Term1 Starter Kit](https://github.com/udacity/CarND-Term1-Starter-Kit/blob/master/README.md) installation instructions!):
 
-`> jupyter notebook`
+## Pipeline
+---
 
-A browser window will appear showing the contents of the current directory.  Click on the file called "P1.ipynb".  Another browser window will appear displaying the notebook.  Follow the instructions in the notebook to complete the project.  
+The pipeline consists of the next steps:
 
-**Step 3:** Complete the project and submit both the Ipython notebook and the project writeup
+- Apply Grayscale Transform
+- Apply Gaussian Blur
+- Detect Canny Edges
+- Filter the uninteresting region out
+- Apply Hough Transform to detect line segments
+- Extrapolate lane lines from line segments
+- Stabilize lane lines
+- Adds overlayed lane lines to the original image
 
-## How to write a README
-A well written README file can enhance your project and portfolio.  Develop your abilities to create professional README files by completing [this free course](https://www.udacity.com/course/writing-readmes--ud777).
+Each step explained below.
+
+## Lanes recognition on images
+---
+
+Consider the next original image:
+
+![Original Image](./test_images/solidWhiteCurve.jpg)
+
+
+### Apply Grayscale Transform
+
+The point is to recognize white and yellow lines. These colors will have high contrast with the road if the image is in grayscale. For example:
+
+![Grayscale Image](./test_images/../examples/../test_images_output/gray_solidWhiteCurve.jpg)
+
+### Apply Gaussian Blue
+
+The grayscale image has a lot of potential noizes. It's possible to reduce them with the technic [Gaussian Blur](https://en.wikipedia.org/wiki/Gaussian_blur). The blur must not be too aggressive. After this step, we have the next image:
+
+![Blured Image](./test_images/../examples/../test_images_output/blur_solidWhiteCurve.jpg)
+
+### Detect Canny Edges
+
+At this step we recognize lines on the image with [Canny Edge detector](https://en.wikipedia.org/wiki/Canny_edge_detector). The detector helps to get a set of edges. Edges are just borders between contrasting areas.
+
+![Edges](./test_images/../examples/../test_images_output/edges_solidWhiteCurve.jpg)
+
+### Consider only the interesting region
+
+The outcome of the previous stage contains too many edges. Many of them are not interesting in the project. It’s possible to avoid all such edges if we consider only a specific region in front of the car. After this stage, we need to consider only the next edges:
+
+![Filtered Edges](./test_images/../examples/../test_images_output/masked_solidWhiteCurve.jpg)
+
+### Hough Transform
+
+[Hough Transform](https://en.wikipedia.org/wiki/Hough_transform) helps us to helps us to extract shapes from the image. The trickiest part of the step is finding the correct parameters. Since such parameters are discovered, this operation provides us line segments which construct almost straight lines:
+
+![Hough Transform](./test_images/../examples/../test_images_output/no_extrapolation_solidWhiteCurve.jpg)
+
+A short compilation of all three video files:
+
+[![Without extrapolation video](http://img.youtube.com/vi/wC_tNS-X7IQ/0.jpg)](http://www.youtube.com/watch?v=wC_tNS-X7IQ)
+
+### Extrapolation
+
+At this stage, it’s possible to extrapolate these lines. To do it properly, we need to split lines onto the left and right sets of segments. How to determine if the element is part of the left or right group?
+
+With coordinates of the segment, it’s possible to calculate the slope of the element. It’s easy to make a mistake here. On the image, the Y-axis goes from top to down.
+
+- For the left line, the slope is negative – X increases, but Y decreases
+- For the right line, the slope is positive – both X and Y increases
+
+Segments with a very small absolute value of the slope might be ignored because they’re almost horizontal and aren’t valuable.
+
+![Splitted segements](./test_images/../examples/../test_images_output/separated_solidWhiteCurve.jpg)
+
+Now, it’s time to extrapolate all these segments in both groups and overlay them onto the original image:
+
+![Extrapolated lines](./test_images/../examples/../test_images_output/solidWhiteCurve.jpg)
+
+**Let's discuss the stabilization later**
+
+## Lanes recognition on videos
+---
+
+### First attempt
+
+Let’s pipeline with the provided video files. The result is far away from the expected. Lines shake. Moreover, in the last video, there’s a short segment with a very bright asphalt. Previously used parameters for the pipeline wrongly detect lines. The video below is the short compilation of the result. Look at this strange deviation at the end of the clip. Lines even crossed!
+
+[![With extrapolation video](http://img.youtube.com/vi/877t8oGE7yw/0.jpg)](http://www.youtube.com/watch?v=877t8oGE7yw)
+
+### Stabilization
+
+Let's assume we can keep coefficients of both extrapolated lines for some number of frames. Now we can calculate means for them. If extrapolated coefficients differ significantly from their means, then we just use these means from the previous frames. The video contains a compilation of all resulting videos:
+
+[![With stabilization video](http://img.youtube.com/vi/NvHcAr8emE0/0.jpg)](http://www.youtube.com/watch?v=NvHcAr8emE0)
+
+## Improvements
+---
+
+The provided workaround with stabilization is enough for the current project. Unfortunately, it doesn’t work well on more curly roads. In the next projects, this technique must be changed with more sophisticated algorithms from [Machine Learning](https://en.wikipedia.org/wiki/Machine_learning).
 
