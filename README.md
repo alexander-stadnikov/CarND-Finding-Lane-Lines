@@ -1,7 +1,6 @@
 # **Finding Lane Lines on the Road** 
 
 ## Overview
----
 
 Recognizing lanes on the road is one of the essential tasks which human drivers perform well. It’s possible because nature with evolution gifted us perfect sensors. Autonomous systems are only at the beginning of their epoch. It’s a non-trivial task for any robot to read and interpret data about the world around them. [Computer Vision](https://en.wikipedia.org/wiki/Computer_vision) tries to eliminate the gap between us, humans, and robots.
 
@@ -18,7 +17,6 @@ All source codes and assets are available on [GitHub](https://github.com/alexand
 
 
 ## The project setup
----
 
 The project consists of a notebook and assets.
 
@@ -34,7 +32,6 @@ A video stream is just a set of frames. The solution for images will be scaled t
 
 
 ## Pipeline
----
 
 The pipeline consists of the next steps:
 
@@ -50,7 +47,6 @@ The pipeline consists of the next steps:
 Each step explained below.
 
 ## Lanes recognition on images
----
 
 Consider the next original image:
 
@@ -111,7 +107,6 @@ Now, it’s time to extrapolate all these segments in both groups and overlay th
 **Let's discuss the stabilization later**
 
 ## Lanes recognition on videos
----
 
 ### First attempt
 
@@ -126,7 +121,6 @@ Let's assume we can keep coefficients of both extrapolated lines for some number
 [![With stabilization video](http://img.youtube.com/vi/NvHcAr8emE0/0.jpg)](http://www.youtube.com/watch?v=NvHcAr8emE0)
 
 ## Improvements
----
 
 The provided workaround with stabilization is enough for the current project. Unfortunately, it doesn’t work well on more curly roads. In the next projects, this technique must be changed with more sophisticated algorithms from [Machine Learning](https://en.wikipedia.org/wiki/Machine_learning).
 
