@@ -121,3 +121,7 @@ Let's assume we can keep coefficients of both extrapolated lines for some number
 
 The provided workaround with stabilization is enough for the current project. Unfortunately, it doesn’t work well on more curly roads. In the next projects, this technique must be changed with more sophisticated algorithms from [Machine Learning](https://en.wikipedia.org/wiki/Machine_learning).
 
+Other possible improvements:
+1. Getting images from an infrared camera
+1. Usage of Random Sample Consensus (RANSAC) and Kalman Filter
+1. Extrapolation to curves instead of to straight lines
