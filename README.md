@@ -76,7 +76,7 @@ The outcome of the previous stage contains too many edges. Many of them are not 
 
 ### Hough Transform
 
-[Hough Transform](https://en.wikipedia.org/wiki/Hough_transform) helps us to helps us to extract shapes from the image. The trickiest part of the step is finding the correct parameters. Since such parameters are discovered, this operation provides us line segments which construct almost straight lines:
+[Hough Transform](https://en.wikipedia.org/wiki/Hough_transform) helps us to extract shapes from the image. The trickiest part of the step is finding the correct parameters. Since such parameters are discovered, this operation provides us line segments which construct almost straight lines:
 
 ![Hough Transform](./test_images/../examples/../test_images_output/no_extrapolation_solidWhiteCurve.jpg)
 
